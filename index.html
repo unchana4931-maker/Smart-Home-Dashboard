@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏠 บ้านแสนสุข Smart Home</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Prompt',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b,#0f172a);
+    min-height:100vh;
+    color:white;
+    padding:20px;
+}
+
+/* HEADER */
+.header{
+    max-width:1200px;
+    margin:auto;
+    background:rgba(255,255,255,0.07);
+    backdrop-filter:blur(15px);
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+h1{
+    font-size:32px;
+}
+
+.clock{
+    text-align:right;
+    font-size:14px;
+    color:#cbd5e1;
+}
+
+.stats{
+    display:flex;
+    gap:15px;
+    margin-top:15px;
+    flex-wrap:wrap;
+}
+
+.stat{
+    background:rgba(255,255,255,0.08);
+    padding:10px 15px;
+    border-radius:12px;
+}
+
+/* GRID */
+.grid{
+    max-width:1200px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+/* CARD */
+.card{
+    background:rgba(255,255,255,0.07);
+    backdrop-filter:blur(12px);
+    border-radius:20px;
+    padding:20px;
+    text-align:center;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.icon{
+    font-size:60px;
+}
+
+.room{
+    font-size:22px;
+    margin:10px 0;
+}
+
+/* LED */
+.led{
+    width:80px;
+    height:80px;
+    margin:15px auto;
+    border-radius:50%;
+    background:#334155;
+    transition:0.3s;
+}
+
+.led.on{
+    background:#00ff66;
+    box-shadow:0 0 15px #00ff66,0 0 40px #00ff66;
+}
+
+/* STATUS */
+.status{
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.on{color:#22c55e;}
+.off{color:#ef4444;}
+
+/* SWITCH */
+.switch{
+    position:relative;
+    display:inline-block;
+    width:65px;
+    height:34px;
+}
+
+.switch input{display:none;}
+
+.slider{
+    position:absolute;
+    cursor:pointer;
+    inset:0;
+    background:#64748b;
+    border-radius:50px;
+    transition:0.3s;
+}
+
+.slider:before{
+    content:"";
+    position:absolute;
+    width:26px;
+    height:26px;
+    left:4px;
+    top:4px;
+    background:white;
+    border-radius:50%;
+    transition:0.3s;
+}
+
+input:checked + .slider{
+    background:#22c55e;
+}
+
+input:checked + .slider:before{
+    transform:translateX(30px);
+}
+
+/* BUTTONS */
+.actions{
+    max-width:1200px;
+    margin:auto;
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.onAll{background:#22c55e;color:white;}
+.offAll{background:#ef4444;color:white;}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="top">
+        <h1>🏠 บ้านแสนสุข Smart Home</h1>
+        <div class="clock">
+            <div id="time">--:--:--</div>
+            <div id="date">----</div>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat">⚡ ON: <span id="onCount">0</span>/4</div>
+        <div class="stat">📡 Firestore Realtime</div>
+        <div class="stat">🏠 device1</div>
+    </div>
+</div>
+
+<div class="actions">
+    <button class="onAll" onclick="allOn()">💡 เปิดทั้งหมด</button>
+    <button class="offAll" onclick="allOff()">🌙 ปิดทั้งหมด</button>
+</div>
+
+<div class="grid">
+
+    <div class="card">
+        <div class="icon">🛏️</div>
+        <div class="room">ห้องนอน</div>
+        <div id="led-bedroom" class="led"></div>
+        <div id="status-bedroom" class="status">Loading...</div>
+        <label class="switch">
+            <input type="checkbox" onchange="toggle('bedroom')" id="sw-bedroom">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="card">
+        <div class="icon">🚿</div>
+        <div class="room">ห้องน้ำ</div>
+        <div id="led-bathroom" class="led"></div>
+        <div id="status-bathroom" class="status">Loading...</div>
+        <label class="switch">
+            <input type="checkbox" onchange="toggle('bathroom')" id="sw-bathroom">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="card">
+        <div class="icon">🍳</div>
+        <div class="room">ห้องครัว</div>
+        <div id="led-kitchen" class="led"></div>
+        <div id="status-kitchen" class="status">Loading...</div>
+        <label class="switch">
+            <input type="checkbox" onchange="toggle('kitchen')" id="sw-kitchen">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="card">
+        <div class="icon">🚪</div>
+        <div class="room">หน้าบ้าน</div>
+        <div id="led-frontyard" class="led"></div>
+        <div id="status-frontyard" class="status">Loading...</div>
+        <label class="switch">
+            <input type="checkbox" onchange="toggle('frontyard')" id="sw-frontyard">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+getFirestore,
+doc,
+onSnapshot,
+updateDoc,
+setDoc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyDLLf_JU92di4GZDtXPRlFOIHf7mj8Mo7w",
+authDomain: "work5iot.firebaseapp.com",
+projectId: "work5iot",
+storageBucket: "work5iot.firebasestorage.app",
+messagingSenderId: "269622148164",
+appId: "1:269622148164:web:e08ed62e958f1f4869d011"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const ref = doc(db,"IOTwork5","device1");
+
+let state = {};
+
+async function init(){
+const s = await getDoc(ref);
+if(!s.exists()){
+await setDoc(ref,{
+bedroom:0,bathroom:0,kitchen:0,frontyard:0
+});
+}
+}
+init();
+
+/* realtime */
+onSnapshot(ref,(snap)=>{
+state = snap.data();
+
+let count = 0;
+
+for(let key in state){
+if(state[key]==1) count++;
+
+let led = document.getElementById("led-"+key);
+let sw = document.getElementById("sw-"+key);
+let status = document.getElementById("status-"+key);
+
+if(state[key]==1){
+led.classList.add("on");
+status.innerHTML="🟢 ON";
+sw.checked=true;
+}else{
+led.classList.remove("on");
+status.innerHTML="🔴 OFF";
+sw.checked=false;
+}
+}
+
+document.getElementById("onCount").innerText=count;
+});
+
+/* toggle */
+window.toggle = async(room)=>{
+await updateDoc(ref,{
+[room]: state[room]==1?0:1
+});
+};
+
+window.allOn = async()=>{
+await updateDoc(ref,{
+bedroom:1,bathroom:1,kitchen:1,frontyard:1
+});
+};
+
+window.allOff = async()=>{
+await updateDoc(ref,{
+bedroom:0,bathroom:0,kitchen:0,frontyard:0
+});
+};
+
+/* clock */
+function clock(){
+let d = new Date();
+document.getElementById("time").innerText = d.toLocaleTimeString("th-TH");
+document.getElementById("date").innerText = d.toLocaleDateString("th-TH");
+}
+setInterval(clock,1000);
+clock();
+
+</script>
+
+</body>
+</html>
